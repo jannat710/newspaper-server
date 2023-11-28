@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 require('dotenv').config()
+const jwt = require('jsonwebtoken');
 
 // middleware
 app.use(cors());
