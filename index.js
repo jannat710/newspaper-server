@@ -30,6 +30,14 @@ async function run() {
         // Send a ping to confirm a successful connection
 
         const userCollection = client.db("newsDb").collection("users");
+        const newsCollection = client.db("newsDb").collection("news");
+        const articlesCollection = client.db("newsDb").collection("articles");
+
+        //news
+        app.get('/news', async (req, res) => {
+            const result = await newsCollection.find().toArray();
+            res.send(result);
+        });
 
         //JWT
         app.post('/jwt', async (req, res) => {
@@ -53,6 +61,19 @@ async function run() {
             })
         }
 
+        
+        //verify admin
+        const verifyAdmin = async (req, res, next) => {
+            const email = req.decoded.email;
+            const query = { email: email };
+            const user = await userCollection.findOne(query);
+            const isAdmin = user?.role === 'admin';
+            if (!isAdmin) {
+                return res.status(403).send({ message: 'forbidden access' });
+            }
+            next();
+        }
+
 
 
         //Make Admin
@@ -68,17 +89,6 @@ async function run() {
             res.send(result);
         })
 
-        //verify admin
-        const verifyAdmin = async (req, res, next) => {
-            const email = req.decoded.email;
-            const query = { email: email };
-            const user = await userCollection.findOne(query);
-            const isAdmin = user?.role === 'admin';
-            if (!isAdmin) {
-                return res.status(403).send({ message: 'forbidden access' });
-            }
-            next();
-        }
 
 
 
@@ -133,6 +143,13 @@ async function run() {
             const result = await userCollection.deleteOne(query);
             res.send(result);
         })
+
+        //All Articles
+        app.get('/articles', async (req, res) => {
+
+            const result = await articlesCollection.find().toArray();
+            res.send(result);
+        });
 
 
 
