@@ -10,7 +10,6 @@ app.use(express.json());
 
 const port = process.env.PORT || 5001;
 
-
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.pvt8fts.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -26,7 +25,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        // await client.connect();
         // Send a ping to confirm a successful connection
 
         const userCollection = client.db("newsDb").collection("users");
@@ -61,7 +60,6 @@ async function run() {
             })
         }
 
-        
         //verify admin
         const verifyAdmin = async (req, res, next) => {
             const email = req.decoded.email;
@@ -73,8 +71,6 @@ async function run() {
             }
             next();
         }
-
-
 
         //Make Admin
         app.patch('/users/admin/:id', verifyAdmin, verifyToken, async (req, res) => {
@@ -89,9 +85,6 @@ async function run() {
             res.send(result);
         })
 
-
-
-
         app.get('/users/admin/:email', verifyToken, async (req, res) => {
             const email = req.params.email;
             if (email !== req.decoded.email) {
@@ -104,11 +97,7 @@ async function run() {
                 admin = user?.role === 'admin';
             }
             res.send({ admin });
-
         })
-
-
-
 
         //user related API
         // data load
@@ -128,14 +117,6 @@ async function run() {
             res.send(result);
         })
 
-
-
-
-
-
-
-
-
         //delete user
         app.delete('/users/:id', verifyAdmin, verifyToken, async (req, res) => {
             const id = req.params.id;
@@ -151,11 +132,8 @@ async function run() {
             res.send(result);
         });
 
-
-
-
-        await client.db("admin").command({ ping: 1 });
-        console.log("Pinged your deployment. You successfully connected to MongoDB!");
+        // await client.db("admin").command({ ping: 1 });
+        // console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // Ensures that the client will close when you finish/error
         // await client.close();
